@@ -10,7 +10,7 @@ class BlogsController < ApplicationController
   end
 
   def show
-    raise ActiveRecord::RecordNotFound if @blog.secret? && !@blog.owned_by?(current_user)
+    raise ActiveRecord::RecordNotFound if @blog.secret? && !author_of_blog?
   end
 
   def new
@@ -18,7 +18,7 @@ class BlogsController < ApplicationController
   end
 
   def edit
-    raise ActiveRecord::RecordNotFound unless @blog.owned_by?(current_user)
+    raise ActiveRecord::RecordNotFound unless author_of_blog?
   end
 
   def create
@@ -32,7 +32,7 @@ class BlogsController < ApplicationController
   end
 
   def update
-    raise ActiveRecord::RecordNotFound unless @blog.owned_by?(current_user)
+    raise ActiveRecord::RecordNotFound unless author_of_blog?
 
     if @blog.update(blog_params)
       redirect_to blog_url(@blog), notice: 'Blog was successfully updated.'
@@ -48,6 +48,10 @@ class BlogsController < ApplicationController
   end
 
   private
+
+  def author_of_blog?
+    @blog.owned_by?(current_user)
+  end
 
   def set_blog
     @blog = Blog.find(params[:id])
