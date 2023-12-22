@@ -17,7 +17,9 @@ class BlogsController < ApplicationController
     @blog = Blog.new
   end
 
-  def edit; end
+  def edit
+    raise ActiveRecord::RecordNotFound unless @blog.owned_by?(current_user)
+  end
 
   def create
     @blog = current_user.blogs.new(blog_params)
