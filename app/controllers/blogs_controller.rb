@@ -24,6 +24,11 @@ class BlogsController < ApplicationController
   def create
     @blog = current_user.blogs.new(blog_params)
 
+    if @blog.random_eyecatch? && !@blog.user.premium?
+      redirect_to blogs_url
+      return
+    end
+
     if @blog.save
       redirect_to blog_url(@blog), notice: 'Blog was successfully created.'
     else
@@ -60,6 +65,8 @@ class BlogsController < ApplicationController
   end
 
   def blog_params
-    params.require(:blog).permit(:title, :content, :secret, :random_eyecatch)
+    permit_params = %i[title content secret]
+    permit_params.push(:random_eyecatch) if current_user.premium?
+    params.require(:blog).permit(permit_params)
   end
 end
