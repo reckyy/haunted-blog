@@ -10,9 +10,8 @@ class BlogsController < ApplicationController
   end
 
   def show
-    blog = Blog.find(params[:id])
-    @blog = if blog.secret? && user_signed_in?
-              Blog.where(user: current_user, secret: true).find(params[:id])
+    @blog = if user_signed_in? && current_user.blogs.exists?(params[:id])
+              current_user.blogs.find(params[:id])
             else
               Blog.where(secret: false).find(params[:id])
             end
