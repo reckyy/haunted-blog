@@ -13,7 +13,7 @@ class BlogsController < ApplicationController
     @blog = if user_signed_in? && current_user.blogs.exists?(params[:id])
               current_user.blogs.find(params[:id])
             else
-              Blog.where(secret: false).find(params[:id])
+              Blog.published.find(params[:id])
             end
   end
 
